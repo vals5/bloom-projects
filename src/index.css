@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-blanco: #faf9f7;
+  --color-brand-dorado: #dccfb6;
+  --color-brand-bordo: #7a213f;
+
+  --font-lucidity: "Lucidity", sans-serif;
+  --font-cocomat: "Cocomat", sans-serif;
+}
+
+@font-face {
+  font-family: "Lucidity";
+  src: url("./assets/fonts/Lucidity-Condensed.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Cocomat";
+  src: url("./assets/fonts/Cocomat-Light.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@layer base {
+  body {
+    @apply bg-brand-bordo text-brand-blanco font-cocomat antialiased min-h-screen;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-lucidity tracking-wide;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font-family:
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      sans-serif;
+    color: #1e293b;
+  }
+}
+
+.font-numbers {
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    sans-serif !important;
+  font-weight: 700 !important;
+}
