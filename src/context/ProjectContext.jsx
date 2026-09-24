@@ -1,30 +1,40 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { supabase } from "../supabase";
 
 const ProjectContext = createContext();
 
-const initialProjects = [];
-
 export const ProjectProvider = ({ children }) => {
-  const [projects, setProjects] = useState(() => {
-    const saved = localStorage.getItem("agency_projects");
-    return saved ? JSON.parse(saved) : initialProjects;
-  });
-
-  const [budgets, setBudgets] = useState(() => {
-    const saved = localStorage.getItem("agency_budgets");
-    return saved ? JSON.parse(saved) : [];
-  });
-
+  const [projects, setProjects] = useState([]);
+  const [budgets, setBudgets] = useState([]);
   const [activeTimerTicket, setActiveTimerTicket] = useState(null);
 
-  useEffect(() => {
-    localStorage.setItem("agency_projects", JSON.stringify(projects));
-  }, [projects]);
+  // Agregamos un estado de carga para no mostrar vacía la app mientras trae los datos
+  const [loading, setLoading] = useState(true);
 
+  // 1. Cargar datos desde Supabase al iniciar la app
   useEffect(() => {
-    localStorage.setItem("agency_budgets", JSON.stringify(budgets));
-  }, [budgets]);
+    const loadData = async () => {
+      const { data: pData } = await supabase.from("projects").select("*");
+      const { data: bData } = await supabase.from("budgets").select("*");
 
+      if (pData) setProjects(pData.map((p) => ({ ...p.data, id: p.id })));
+      if (bData) setBudgets(bData.map((b) => ({ ...b.data, id: b.id })));
+
+      setLoading(false);
+    };
+    loadData();
+  }, []);
+
+  // Helpers para sincronizar un item específico a la base de datos sin trabar la UI
+  const syncProject = async (project) => {
+    await supabase.from("projects").upsert({ id: project.id, data: project });
+  };
+
+  const syncBudget = async (budget) => {
+    await supabase.from("budgets").upsert({ id: budget.id, data: budget });
+  };
+
+  // 2. Timer Effect (se mantiene igual, actualizando solo la UI)
   useEffect(() => {
     let interval = null;
 
@@ -64,15 +74,19 @@ export const ProjectProvider = ({ children }) => {
 
   // PROYECTOS
   const addProject = (newProject) => {
-    setProjects((prev) => [{ ...newProject, id: Date.now(), tickets: [] }, ...prev]);
+    const project = { ...newProject, id: Date.now(), tickets: [] };
+    setProjects((prev) => [project, ...prev]);
+    syncProject(project);
   };
 
   const updateProject = (updated) => {
     setProjects((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+    syncProject(updated);
   };
 
-  const deleteProject = (id) => {
+  const deleteProject = async (id) => {
     setProjects((prev) => prev.filter((p) => p.id !== id));
+    await supabase.from("projects").delete().eq("id", id);
   };
 
   // TICKETS
@@ -84,42 +98,34 @@ export const ProjectProvider = ({ children }) => {
       secondsSpent: 0,
       dateAdded: new Date().toISOString().split("T")[0],
     };
-    setProjects((prev) =>
-      prev.map((p) => {
-        if (p.id === projectId) {
-          return { ...p, tickets: [newTicket, ...p.tickets] };
-        }
-        return p;
-      }),
-    );
+    setProjects((prev) => {
+      const newState = prev.map((p) => (p.id === projectId ? { ...p, tickets: [newTicket, ...p.tickets] } : p));
+      syncProject(newState.find((p) => p.id === projectId)); // Sincroniza
+      return newState;
+    });
   };
 
   const deleteTicket = (projectId, ticketId) => {
-    setProjects((prev) =>
-      prev.map((p) => {
-        if (p.id === projectId) {
-          return { ...p, tickets: p.tickets.filter((t) => t.id !== ticketId) };
-        }
-        return p;
-      }),
-    );
-    if (activeTimerTicket?.ticketId === ticketId) {
-      setActiveTimerTicket(null);
-    }
+    setProjects((prev) => {
+      const newState = prev.map((p) =>
+        p.id === projectId ? { ...p, tickets: p.tickets.filter((t) => t.id !== ticketId) } : p,
+      );
+      syncProject(newState.find((p) => p.id === projectId)); // Sincroniza
+      return newState;
+    });
+    if (activeTimerTicket?.ticketId === ticketId) setActiveTimerTicket(null);
   };
 
   const toggleTicketStatus = (projectId, ticketId) => {
-    setProjects((prev) =>
-      prev.map((p) => {
+    setProjects((prev) => {
+      const newState = prev.map((p) => {
         if (p.id === projectId) {
           return {
             ...p,
             tickets: p.tickets.map((t) => {
               if (t.id === ticketId) {
                 const nextStatus = t.status === "completed" ? "pending" : "completed";
-                if (nextStatus === "completed" && activeTimerTicket?.ticketId === ticketId) {
-                  setActiveTimerTicket(null);
-                }
+                if (nextStatus === "completed" && activeTimerTicket?.ticketId === ticketId) setActiveTimerTicket(null);
                 return { ...t, status: nextStatus };
               }
               return t;
@@ -127,29 +133,49 @@ export const ProjectProvider = ({ children }) => {
           };
         }
         return p;
-      }),
-    );
+      });
+      syncProject(newState.find((p) => p.id === projectId)); // Sincroniza
+      return newState;
+    });
   };
 
   const toggleTimer = (projectId, ticketId) => {
     if (activeTimerTicket && activeTimerTicket.ticketId === ticketId) {
+      // Si apaga el timer actual, sincronizamos el proyecto con la DB
       setActiveTimerTicket(null);
+      setProjects((prev) => {
+        const proj = prev.find((p) => p.id === projectId);
+        if (proj) syncProject(proj);
+        return prev;
+      });
     } else {
+      // Si prende uno nuevo pero había otro corriendo, guardamos el anterior primero
+      if (activeTimerTicket) {
+        setProjects((prev) => {
+          const proj = prev.find((p) => p.id === activeTimerTicket.projectId);
+          if (proj) syncProject(proj);
+          return prev;
+        });
+      }
       setActiveTimerTicket({ projectId, ticketId });
     }
   };
 
   // PRESUPUESTOS
   const addBudget = (newBudget) => {
-    setBudgets((prev) => [{ ...newBudget, id: Date.now() }, ...prev]);
+    const budget = { ...newBudget, id: Date.now() };
+    setBudgets((prev) => [budget, ...prev]);
+    syncBudget(budget);
   };
 
   const updateBudget = (updated) => {
     setBudgets((prev) => prev.map((b) => (b.id === updated.id ? updated : b)));
+    syncBudget(updated);
   };
 
-  const deleteBudget = (id) => {
+  const deleteBudget = async (id) => {
     setBudgets((prev) => prev.filter((b) => b.id !== id));
+    await supabase.from("budgets").delete().eq("id", id);
   };
 
   return (
@@ -170,7 +196,14 @@ export const ProjectProvider = ({ children }) => {
         deleteBudget,
       }}
     >
-      {children}
+      {/* Evita parpadeos mostrando los componentes solo cuando Supabase ya cargó */}
+      {!loading ? (
+        children
+      ) : (
+        <div className="min-h-screen flex items-center justify-center text-brand-dorado font-lucidity uppercase tracking-widest">
+          Cargando Bloom...
+        </div>
+      )}
     </ProjectContext.Provider>
   );
 };
