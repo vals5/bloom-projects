@@ -11,17 +11,51 @@ export const ProjectProvider = ({ children }) => {
   // Agregamos un estado de carga para no mostrar vacía la app mientras trae los datos
   const [loading, setLoading] = useState(true);
 
-  // 1. Cargar datos desde Supabase al iniciar la app
+  // 1. Cargar datos desde Supabase (y migrar localStorage si es necesario)
   useEffect(() => {
     const loadData = async () => {
+      // Pedimos los datos a la nube
       const { data: pData } = await supabase.from("projects").select("*");
       const { data: bData } = await supabase.from("budgets").select("*");
 
-      if (pData) setProjects(pData.map((p) => ({ ...p.data, id: p.id })));
-      if (bData) setBudgets(bData.map((b) => ({ ...b.data, id: b.id })));
+      let loadedProjects = [];
+      let loadedBudgets = [];
 
+      // --- MIGRACIÓN DE PROYECTOS ---
+      if (pData && pData.length > 0) {
+        loadedProjects = pData.map((p) => ({ ...p.data, id: p.id }));
+      } else {
+        // Si la nube está vacía, buscamos en la PC local
+        const localProjects = JSON.parse(localStorage.getItem("agency_projects") || "[]");
+        if (localProjects.length > 0) {
+          console.log("Migrando proyectos locales a Supabase...");
+          for (const p of localProjects) {
+            await supabase.from("projects").upsert({ id: p.id, data: p });
+          }
+          loadedProjects = localProjects;
+        }
+      }
+
+      // --- MIGRACIÓN DE PRESUPUESTOS ---
+      if (bData && bData.length > 0) {
+        loadedBudgets = bData.map((b) => ({ ...b.data, id: b.id }));
+      } else {
+        // Si la nube está vacía, buscamos en la PC local
+        const localBudgets = JSON.parse(localStorage.getItem("agency_budgets") || "[]");
+        if (localBudgets.length > 0) {
+          console.log("Migrando presupuestos locales a Supabase...");
+          for (const b of localBudgets) {
+            await supabase.from("budgets").upsert({ id: b.id, data: b });
+          }
+          loadedBudgets = localBudgets;
+        }
+      }
+
+      setProjects(loadedProjects);
+      setBudgets(loadedBudgets);
       setLoading(false);
     };
+
     loadData();
   }, []);
 
@@ -200,8 +234,8 @@ export const ProjectProvider = ({ children }) => {
       {!loading ? (
         children
       ) : (
-        <div className="min-h-screen flex items-center justify-center text-brand-dorado font-lucidity uppercase tracking-widest">
-          Cargando Bloom...
+        <div className="min-h-screen flex items-center justify-center text-brand-dorado font-lucidity uppercase tracking-widest text-2xl">
+          Cargando Bloom
         </div>
       )}
     </ProjectContext.Provider>
