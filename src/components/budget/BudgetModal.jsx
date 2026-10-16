@@ -60,20 +60,20 @@ export const BudgetModal = ({ isOpen, onClose, initialData = null }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 text-slate-800 max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center pb-4 border-b border-slate-100">
+    <div className="fixed inset-0 bg-[#2a0b16]/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-brand-blanco rounded-xl shadow-xl max-w-lg w-full p-6 text-brand-bordo max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center pb-4 border-b border-brand-dorado/40">
           <h2 className="text-2xl font-lucidity text-brand-bordo uppercase tracking-wide">
             {initialData ? "Editar Presupuesto" : "Nuevo Presupuesto"}
           </h2>
-          <button onClick={onClose} className="p-1 text-slate-400 hover:text-slate-600 rounded-lg">
+          <button onClick={onClose} className="p-1 text-brand-bordo/50 hover:text-brand-bordo/80 rounded-lg">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 mt-4 font-sans">
+        <form onSubmit={handleSubmit} className="space-y-4 mt-4 ">
           <div>
-            <label className="block text-xs font-bold text-slate-500 mb-1 font-cocomat uppercase">
+            <label className="block text-xs font-bold text-brand-bordo/70 mb-1 font-cocomat uppercase">
               Vincular a Proyecto
             </label>
             <select
@@ -81,7 +81,7 @@ export const BudgetModal = ({ isOpen, onClose, initialData = null }) => {
               required
               value={formData.projectId}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none bg-white text-slate-800"
+              className="w-full px-3 py-2 border border-brand-dorado rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none bg-brand-blanco text-brand-bordo"
             >
               <option value="" disabled>
                 Seleccionar proyecto...
@@ -96,14 +96,14 @@ export const BudgetModal = ({ isOpen, onClose, initialData = null }) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 font-cocomat uppercase">
+              <label className="block text-xs font-bold text-brand-bordo/70 mb-1 font-cocomat uppercase">
                 Estado Presupuesto
               </label>
               <select
                 name="budgetStatus"
                 value={formData.budgetStatus}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none bg-white text-slate-800"
+                className="w-full px-3 py-2 border border-brand-dorado rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none bg-brand-blanco text-brand-bordo"
               >
                 <option value="draft">Borrador</option>
                 <option value="sent">Enviado</option>
@@ -112,14 +112,14 @@ export const BudgetModal = ({ isOpen, onClose, initialData = null }) => {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 font-cocomat uppercase">
+              <label className="block text-xs font-bold text-brand-bordo/70 mb-1 font-cocomat uppercase">
                 Estado Diseño
               </label>
               <select
                 name="designStatus"
                 value={formData.designStatus}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none bg-white text-slate-800"
+                className="w-full px-3 py-2 border border-brand-dorado rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none bg-brand-blanco text-brand-bordo"
               >
                 <option value="pending">Pendiente</option>
                 <option value="in_progress">En proceso</option>
@@ -130,19 +130,21 @@ export const BudgetModal = ({ isOpen, onClose, initialData = null }) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 font-cocomat uppercase">Moneda</label>
+              <label className="block text-xs font-bold text-brand-bordo/70 mb-1 font-cocomat uppercase">Moneda</label>
               <select
                 name="currency"
                 value={formData.currency}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none bg-white text-slate-800"
+                className="w-full px-3 py-2 border border-brand-dorado rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none bg-brand-blanco text-brand-bordo"
               >
                 <option value="ARS">ARS</option>
                 <option value="USD">USD</option>
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 font-cocomat uppercase">Monto Total</label>
+              <label className="block text-xs font-bold text-brand-bordo/70 mb-1 font-cocomat uppercase">
+                Monto Total
+              </label>
               <input
                 type="number"
                 name="amount"
@@ -150,14 +152,14 @@ export const BudgetModal = ({ isOpen, onClose, initialData = null }) => {
                 placeholder="Ej: 150000"
                 value={formData.amount}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none font-numbers text-slate-800"
+                className="w-full px-3 py-2 border border-brand-dorado rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none font-numbers text-brand-bordo"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 font-cocomat uppercase">
+              <label className="block text-xs font-bold text-brand-bordo/70 mb-1 font-cocomat uppercase">
                 Fecha de Envío
               </label>
               <input
@@ -166,24 +168,26 @@ export const BudgetModal = ({ isOpen, onClose, initialData = null }) => {
                 placeholder="DD/MM/AAAA"
                 value={formData.sendDate}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none font-numbers text-slate-800"
+                className="w-full px-3 py-2 border border-brand-dorado rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none font-numbers text-brand-bordo"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 font-cocomat uppercase">Vencimiento</label>
+              <label className="block text-xs font-bold text-brand-bordo/70 mb-1 font-cocomat uppercase">
+                Vencimiento
+              </label>
               <input
                 type="text"
                 name="expiryDate"
                 placeholder="DD/MM/AAAA"
                 value={formData.expiryDate}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none font-numbers text-slate-800"
+                className="w-full px-3 py-2 border border-brand-dorado rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none font-numbers text-brand-bordo"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-500 mb-1 font-cocomat uppercase">
+            <label className="block text-xs font-bold text-brand-bordo/70 mb-1 font-cocomat uppercase">
               Link del Diseño (Canva/PDF)
             </label>
             <input
@@ -192,11 +196,11 @@ export const BudgetModal = ({ isOpen, onClose, initialData = null }) => {
               placeholder="https://..."
               value={formData.documentLink}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none text-slate-800"
+              className="w-full px-3 py-2 border border-brand-dorado rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none text-brand-bordo"
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-500 mb-1 font-cocomat uppercase">
+            <label className="block text-xs font-bold text-brand-bordo/70 mb-1 font-cocomat uppercase">
               Entregables / Notas
             </label>
             <textarea
@@ -205,15 +209,15 @@ export const BudgetModal = ({ isOpen, onClose, initialData = null }) => {
               placeholder="Ej: Incluye 4 posteos y 1 reel..."
               value={formData.notes}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none text-slate-800 resize-none"
+              className="w-full px-3 py-2 border border-brand-dorado rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none text-brand-bordo resize-none"
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-brand-dorado/40">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-slate-300 text-slate-700 text-sm font-bold rounded-lg hover:bg-slate-50 font-cocomat uppercase"
+              className="px-4 py-2 border border-brand-dorado text-brand-bordo text-sm font-bold rounded-lg hover:bg-brand-dorado/20 font-cocomat uppercase"
             >
               Cancelar
             </button>

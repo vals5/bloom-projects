@@ -5,8 +5,24 @@
   --color-brand-dorado: #dccfb6;
   --color-brand-bordo: #7a213f;
 
-  --font-lucidity: "Lucidity", sans-serif;
-  --font-cocomat: "Cocomat", sans-serif;
+  /* Principal: Lucidity (títulos y botones grandes), con sus propios números.
+     Secundaria: Cocomat (todo el resto), con los números del sistema ("Bloom Numerals",
+     que solo toma los dígitos, ver @font-face) porque los de Cocomat salían raros. */
+  --font-lucidity: "Lucidity", ui-sans-serif, sans-serif;
+  --font-cocomat: "Bloom Numerals", "Cocomat", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Bloom Numerals", ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+/* Números: usa la fuente bold del sistema, solo para 0-9, $ y % */
+@font-face {
+  font-family: "Bloom Numerals";
+  src:
+    local("Segoe UI Bold"), local("SegoeUI-Bold"), local("SF Pro Text Bold"), local("SFProText-Bold"),
+    local("Helvetica Neue Bold"), local("HelveticaNeue-Bold"), local("Roboto Bold"), local("Roboto-Bold"),
+    local("Arial Bold"), local("Arial-BoldMT");
+  font-weight: 700;
+  font-style: normal;
+  unicode-range: U+0024-0025, U+0030-0039;
 }
 
 @font-face {
@@ -16,11 +32,13 @@
   font-style: normal;
 }
 
+/* Cocomat sin dígitos (si Bloom Numerals no está, caen a la fuente del sistema) */
 @font-face {
   font-family: "Cocomat";
   src: url("./assets/fonts/Cocomat-Light.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
+  unicode-range: U+0000-002F, U+003A-10FFFF;
 }
 
 @layer base {
@@ -37,21 +55,23 @@
     @apply font-lucidity tracking-wide;
   }
 
+  /* Formularios en Cocomat (los números salen con la fuente del sistema) */
   input,
   select,
   textarea,
   button {
-    font-family:
-      ui-sans-serif,
-      system-ui,
-      -apple-system,
-      sans-serif;
-    color: #1e293b;
+    font-family: var(--font-cocomat);
+    color: #3a1523;
+  }
+
+  button {
+    color: inherit;
   }
 }
 
 .font-numbers {
   font-family:
+    "Bloom Numerals",
     ui-sans-serif,
     system-ui,
     -apple-system,

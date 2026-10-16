@@ -1,110 +1,134 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { supabase } from "../supabase";
+import { toDateKey } from "../utils/formatters";
 
 const ProjectContext = createContext();
 
 export const ProjectProvider = ({ children }) => {
   const [projects, setProjects] = useState([]);
   const [budgets, setBudgets] = useState([]);
+  const [events, setEvents] = useState([]);
   const [activeTimerTicket, setActiveTimerTicket] = useState(null);
-
-  // Agregamos un estado de carga para no mostrar vacía la app mientras trae los datos
   const [loading, setLoading] = useState(true);
+  const [syncError, setSyncError] = useState(null);
+
+  // Siempre apunta a la última versión de projects (para el autoguardado del timer)
+  const projectsRef = useRef(projects);
+  projectsRef.current = projects;
+
+  // Ejecuta una consulta a Supabase y avisa si falló (antes los errores se ignoraban)
+  const safe = async (query) => {
+    const { error } = await query;
+    if (error) {
+      console.error("Supabase:", error);
+      setSyncError(error.message);
+    } else {
+      setSyncError(null);
+    }
+  };
+
+  const syncProject = (project) => project && safe(supabase.from("projects").upsert({ id: project.id, data: project }));
+  const syncBudget = (budget) => safe(supabase.from("budgets").upsert({ id: budget.id, data: budget }));
+  const syncEvent = (event) => safe(supabase.from("events").upsert({ id: event.id, data: event }));
 
   // 1. Cargar datos desde Supabase (y migrar localStorage si es necesario)
   useEffect(() => {
     const loadData = async () => {
-      // Pedimos los datos a la nube
-      const { data: pData } = await supabase.from("projects").select("*");
-      const { data: bData } = await supabase.from("budgets").select("*");
+      try {
+        const [pRes, bRes, eRes] = await Promise.all([
+          supabase.from("projects").select("*"),
+          supabase.from("budgets").select("*"),
+          supabase.from("events").select("*"),
+        ]);
 
-      let loadedProjects = [];
-      let loadedBudgets = [];
-
-      // --- MIGRACIÓN DE PROYECTOS ---
-      if (pData && pData.length > 0) {
-        loadedProjects = pData.map((p) => ({ ...p.data, id: p.id }));
-      } else {
-        // Si la nube está vacía, buscamos en la PC local
-        const localProjects = JSON.parse(localStorage.getItem("agency_projects") || "[]");
-        if (localProjects.length > 0) {
-          console.log("Migrando proyectos locales a Supabase...");
-          for (const p of localProjects) {
-            await supabase.from("projects").upsert({ id: p.id, data: p });
-          }
-          loadedProjects = localProjects;
+        if (pRes.error || bRes.error || eRes.error) {
+          const err = pRes.error || bRes.error || eRes.error;
+          console.error("Supabase:", err);
+          setSyncError(err.message);
         }
-      }
 
-      // --- MIGRACIÓN DE PRESUPUESTOS ---
-      if (bData && bData.length > 0) {
-        loadedBudgets = bData.map((b) => ({ ...b.data, id: b.id }));
-      } else {
-        // Si la nube está vacía, buscamos en la PC local
-        const localBudgets = JSON.parse(localStorage.getItem("agency_budgets") || "[]");
-        if (localBudgets.length > 0) {
-          console.log("Migrando presupuestos locales a Supabase...");
-          for (const b of localBudgets) {
-            await supabase.from("budgets").upsert({ id: b.id, data: b });
+        let loadedProjects = [];
+        let loadedBudgets = [];
+
+        // Solo migramos desde localStorage si la nube respondió bien y está vacía
+        if (!pRes.error && pRes.data?.length > 0) {
+          loadedProjects = pRes.data.map((p) => ({ ...p.data, id: p.id }));
+        } else if (!pRes.error) {
+          const local = JSON.parse(localStorage.getItem("agency_projects") || "[]");
+          if (local.length > 0) {
+            console.log("Migrando proyectos locales a Supabase...");
+            for (const p of local) await supabase.from("projects").upsert({ id: p.id, data: p });
+            loadedProjects = local;
           }
-          loadedBudgets = localBudgets;
         }
-      }
 
-      setProjects(loadedProjects);
-      setBudgets(loadedBudgets);
-      setLoading(false);
+        if (!bRes.error && bRes.data?.length > 0) {
+          loadedBudgets = bRes.data.map((b) => ({ ...b.data, id: b.id }));
+        } else if (!bRes.error) {
+          const local = JSON.parse(localStorage.getItem("agency_budgets") || "[]");
+          if (local.length > 0) {
+            console.log("Migrando presupuestos locales a Supabase...");
+            for (const b of local) await supabase.from("budgets").upsert({ id: b.id, data: b });
+            loadedBudgets = local;
+          }
+        }
+
+        setProjects(loadedProjects);
+        setBudgets(loadedBudgets);
+        setEvents((eRes.data || []).map((e) => ({ ...e.data, id: e.id })));
+      } finally {
+        setLoading(false);
+      }
     };
 
     loadData();
   }, []);
 
-  // Helpers para sincronizar un item específico a la base de datos sin trabar la UI
-  const syncProject = async (project) => {
-    await supabase.from("projects").upsert({ id: project.id, data: project });
-  };
-
-  const syncBudget = async (budget) => {
-    await supabase.from("budgets").upsert({ id: budget.id, data: budget });
-  };
-
-  // 2. Timer Effect (se mantiene igual, actualizando solo la UI)
+  // 2. Timer: suma segundos en la UI (sin perder fracciones de segundo)
   useEffect(() => {
-    let interval = null;
+    if (!activeTimerTicket) return;
 
-    if (activeTimerTicket) {
-      let lastTick = Date.now();
+    let lastTick = Date.now();
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const deltaSeconds = Math.floor((now - lastTick) / 1000);
 
-      interval = setInterval(() => {
-        const now = Date.now();
-        const deltaSeconds = Math.floor((now - lastTick) / 1000);
-
-        if (deltaSeconds > 0) {
-          setProjects((prev) =>
-            prev.map((p) => {
-              if (p.id === activeTimerTicket.projectId) {
-                return {
+      if (deltaSeconds > 0) {
+        setProjects((prev) =>
+          prev.map((p) =>
+            p.id === activeTimerTicket.projectId
+              ? {
                   ...p,
-                  tickets: p.tickets.map((t) => {
-                    if (t.id === activeTimerTicket.ticketId) {
-                      return { ...t, secondsSpent: t.secondsSpent + deltaSeconds };
-                    }
-                    return t;
-                  }),
-                };
-              }
-              return p;
-            }),
-          );
-          lastTick = now;
-        }
-      }, 1000);
-    }
+                  tickets: p.tickets.map((t) =>
+                    t.id === activeTimerTicket.ticketId ? { ...t, secondsSpent: t.secondsSpent + deltaSeconds } : t,
+                  ),
+                }
+              : p,
+          ),
+        );
+        lastTick += deltaSeconds * 1000; // antes: lastTick = now (se perdía hasta 1s por tick)
+      }
+    }, 1000);
 
-    return () => {
-      if (interval) clearInterval(interval);
-    };
+    return () => clearInterval(interval);
   }, [activeTimerTicket]);
+
+  // 3. Autoguardado del timer cada 30s (antes solo se guardaba al pausar)
+  useEffect(() => {
+    if (!activeTimerTicket) return;
+    const save = setInterval(() => {
+      syncProject(projectsRef.current.find((p) => p.id === activeTimerTicket.projectId));
+    }, 30000);
+    return () => clearInterval(save);
+  }, [activeTimerTicket]);
+
+  // Modifica un proyecto y lo sincroniza (sin efectos secundarios dentro de setState)
+  const mutateProject = (projectId, fn) => {
+    const current = projectsRef.current.find((p) => p.id === projectId);
+    if (!current) return;
+    setProjects((prev) => prev.map((p) => (p.id === projectId ? fn(p) : p)));
+    syncProject(fn(current));
+  };
 
   // PROYECTOS
   const addProject = (newProject) => {
@@ -120,7 +144,8 @@ export const ProjectProvider = ({ children }) => {
 
   const deleteProject = async (id) => {
     setProjects((prev) => prev.filter((p) => p.id !== id));
-    await supabase.from("projects").delete().eq("id", id);
+    if (activeTimerTicket?.projectId === id) setActiveTimerTicket(null);
+    await safe(supabase.from("projects").delete().eq("id", id));
   };
 
   // TICKETS
@@ -130,66 +155,36 @@ export const ProjectProvider = ({ children }) => {
       title,
       status: "pending",
       secondsSpent: 0,
-      dateAdded: new Date().toISOString().split("T")[0],
+      dateAdded: toDateKey(), // fecha local (toISOString daba el día siguiente después de las 21hs)
     };
-    setProjects((prev) => {
-      const newState = prev.map((p) => (p.id === projectId ? { ...p, tickets: [newTicket, ...p.tickets] } : p));
-      syncProject(newState.find((p) => p.id === projectId)); // Sincroniza
-      return newState;
-    });
+    mutateProject(projectId, (p) => ({ ...p, tickets: [newTicket, ...p.tickets] }));
   };
 
   const deleteTicket = (projectId, ticketId) => {
-    setProjects((prev) => {
-      const newState = prev.map((p) =>
-        p.id === projectId ? { ...p, tickets: p.tickets.filter((t) => t.id !== ticketId) } : p,
-      );
-      syncProject(newState.find((p) => p.id === projectId)); // Sincroniza
-      return newState;
-    });
+    mutateProject(projectId, (p) => ({ ...p, tickets: p.tickets.filter((t) => t.id !== ticketId) }));
     if (activeTimerTicket?.ticketId === ticketId) setActiveTimerTicket(null);
   };
 
   const toggleTicketStatus = (projectId, ticketId) => {
-    setProjects((prev) => {
-      const newState = prev.map((p) => {
-        if (p.id === projectId) {
-          return {
-            ...p,
-            tickets: p.tickets.map((t) => {
-              if (t.id === ticketId) {
-                const nextStatus = t.status === "completed" ? "pending" : "completed";
-                if (nextStatus === "completed" && activeTimerTicket?.ticketId === ticketId) setActiveTimerTicket(null);
-                return { ...t, status: nextStatus };
-              }
-              return t;
-            }),
-          };
-        }
-        return p;
-      });
-      syncProject(newState.find((p) => p.id === projectId)); // Sincroniza
-      return newState;
-    });
+    mutateProject(projectId, (p) => ({
+      ...p,
+      tickets: p.tickets.map((t) =>
+        t.id === ticketId ? { ...t, status: t.status === "completed" ? "pending" : "completed" } : t,
+      ),
+    }));
+    // Si lo completás mientras corría el timer, se frena
+    if (activeTimerTicket?.ticketId === ticketId) setActiveTimerTicket(null);
   };
 
   const toggleTimer = (projectId, ticketId) => {
-    if (activeTimerTicket && activeTimerTicket.ticketId === ticketId) {
-      // Si apaga el timer actual, sincronizamos el proyecto con la DB
+    if (activeTimerTicket?.ticketId === ticketId) {
+      // Pausa: guardamos el proyecto
+      syncProject(projectsRef.current.find((p) => p.id === projectId));
       setActiveTimerTicket(null);
-      setProjects((prev) => {
-        const proj = prev.find((p) => p.id === projectId);
-        if (proj) syncProject(proj);
-        return prev;
-      });
     } else {
-      // Si prende uno nuevo pero había otro corriendo, guardamos el anterior primero
+      // Si había otro corriendo, guardamos ese primero
       if (activeTimerTicket) {
-        setProjects((prev) => {
-          const proj = prev.find((p) => p.id === activeTimerTicket.projectId);
-          if (proj) syncProject(proj);
-          return prev;
-        });
+        syncProject(projectsRef.current.find((p) => p.id === activeTimerTicket.projectId));
       }
       setActiveTimerTicket({ projectId, ticketId });
     }
@@ -209,7 +204,27 @@ export const ProjectProvider = ({ children }) => {
 
   const deleteBudget = async (id) => {
     setBudgets((prev) => prev.filter((b) => b.id !== id));
-    await supabase.from("budgets").delete().eq("id", id);
+    await safe(supabase.from("budgets").delete().eq("id", id));
+  };
+
+  // CALENDARIO
+  const addEvent = ({ title, date, type = "Post", projectId = null }) => {
+    const event = { id: Date.now(), title, date, type, projectId, done: false };
+    setEvents((prev) => [...prev, event]);
+    syncEvent(event);
+  };
+
+  const toggleEvent = (id) => {
+    const current = events.find((e) => e.id === id);
+    if (!current) return;
+    const updated = { ...current, done: !current.done };
+    setEvents((prev) => prev.map((e) => (e.id === id ? updated : e)));
+    syncEvent(updated);
+  };
+
+  const deleteEvent = async (id) => {
+    setEvents((prev) => prev.filter((e) => e.id !== id));
+    await safe(supabase.from("events").delete().eq("id", id));
   };
 
   return (
@@ -217,6 +232,7 @@ export const ProjectProvider = ({ children }) => {
       value={{
         projects,
         budgets,
+        events,
         activeTimerTicket,
         addProject,
         updateProject,
@@ -228,11 +244,29 @@ export const ProjectProvider = ({ children }) => {
         addBudget,
         updateBudget,
         deleteBudget,
+        addEvent,
+        toggleEvent,
+        deleteEvent,
       }}
     >
-      {/* Evita parpadeos mostrando los componentes solo cuando Supabase ya cargó */}
       {!loading ? (
-        children
+        <>
+          {children}
+          {syncError && (
+            <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[60] max-w-md bg-brand-blanco text-brand-bordo rounded-xl shadow-lg px-4 py-3 font-cocomat text-sm flex items-start gap-3">
+              <p className="flex-1">
+                <strong>No se pudo guardar en la nube.</strong> Tus cambios se ven acá pero pueden perderse al recargar.
+                <span className="block text-xs opacity-60 mt-1">{syncError}</span>
+              </p>
+              <button
+                onClick={() => setSyncError(null)}
+                className="text-brand-bordo/60 hover:text-brand-bordo text-lg leading-none"
+              >
+                ×
+              </button>
+            </div>
+          )}
+        </>
       ) : (
         <div className="min-h-screen flex items-center justify-center text-brand-dorado font-lucidity uppercase tracking-widest text-2xl">
           Cargando Bloom

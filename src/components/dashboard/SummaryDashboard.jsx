@@ -24,44 +24,44 @@ export const SummaryDashboard = () => {
 
       {/* Las 3 métricas en una sola fila (grid-cols-3) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white p-5 rounded-xl shadow-sm flex flex-col justify-center">
-          <p className="text-xs font-cocomat font-bold text-slate-400 uppercase">Total ARS</p>
-          <p className="text-2xl text-cyan-600 mt-1 font-numbers">{formatCurrency(totalARS, "ARS")}</p>
+        <div className="bg-brand-blanco p-5 rounded-xl shadow-sm flex flex-col justify-center">
+          <p className="text-xs font-cocomat font-bold text-brand-bordo/60 uppercase">Total ARS</p>
+          <p className="text-2xl text-brand-bordo mt-1 font-numbers">{formatCurrency(totalARS, "ARS")}</p>
         </div>
 
-        <div className="bg-white p-5 rounded-xl shadow-sm flex flex-col justify-center">
-          <p className="text-xs font-cocomat font-bold text-slate-400 uppercase">Total USD</p>
-          <p className="text-2xl text-emerald-600 mt-1 font-numbers">{formatCurrency(totalUSD, "USD")}</p>
+        <div className="bg-brand-blanco p-5 rounded-xl shadow-sm flex flex-col justify-center">
+          <p className="text-xs font-cocomat font-bold text-brand-bordo/60 uppercase">Total USD</p>
+          <p className="text-2xl text-brand-bordo mt-1 font-numbers">{formatCurrency(totalUSD, "USD")}</p>
         </div>
 
-        <div className="bg-white p-5 rounded-xl shadow-sm flex flex-col justify-center">
-          <p className="text-xs font-cocomat font-bold text-slate-400 uppercase">Horas totales trabajadas</p>
-          <p className="text-2xl text-indigo-600 mt-1 font-numbers">{formatDuration(totalSecondsAll)}</p>
+        <div className="bg-brand-blanco p-5 rounded-xl shadow-sm flex flex-col justify-center">
+          <p className="text-xs font-cocomat font-bold text-brand-bordo/60 uppercase">Horas totales trabajadas</p>
+          <p className="text-2xl text-brand-bordo mt-1 font-numbers">{formatDuration(totalSecondsAll)}</p>
         </div>
       </div>
 
       {/* Estado de proyectos */}
-      <div className="bg-white p-6 rounded-xl shadow-sm mt-8">
-        <h3 className="text-sm font-cocomat font-bold text-slate-700 mb-4 uppercase tracking-wider">
+      <div className="bg-brand-blanco p-6 rounded-xl shadow-sm mt-8">
+        <h3 className="text-sm font-cocomat font-bold text-brand-bordo mb-4 uppercase tracking-wider">
           Estado de proyectos activos
         </h3>
         <div className="grid grid-cols-3 gap-4 text-center">
-          <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-100">
-            <PlayCircle className="w-6 h-6 text-emerald-600 mx-auto mb-1" />
-            <span className="block text-xl font-numbers text-emerald-800">{inProgressCount}</span>
-            <span className="text-xs font-cocomat font-bold uppercase text-emerald-600">En proceso</span>
+          <div className="p-4 bg-brand-bordo/10 rounded-lg border border-brand-bordo/20">
+            <PlayCircle className="w-6 h-6 text-brand-bordo mx-auto mb-1" />
+            <span className="block text-xl font-numbers text-brand-bordo">{inProgressCount}</span>
+            <span className="text-xs font-cocomat font-bold uppercase text-brand-bordo">En proceso</span>
           </div>
 
-          <div className="p-4 bg-amber-50 rounded-lg border border-amber-100">
-            <PauseCircle className="w-6 h-6 text-amber-600 mx-auto mb-1" />
-            <span className="block text-xl font-numbers text-amber-800">{pausedCount}</span>
-            <span className="text-xs font-cocomat font-bold uppercase text-amber-600">Pausados</span>
+          <div className="p-4 bg-brand-dorado/40 rounded-lg border border-brand-dorado">
+            <PauseCircle className="w-6 h-6 text-brand-bordo mx-auto mb-1" />
+            <span className="block text-xl font-numbers text-brand-bordo">{pausedCount}</span>
+            <span className="text-xs font-cocomat font-bold uppercase text-brand-bordo">Pausados</span>
           </div>
 
-          <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-            <CheckCircle2 className="w-6 h-6 text-slate-600 mx-auto mb-1" />
-            <span className="block text-xl font-numbers text-slate-800">{completedCount}</span>
-            <span className="text-xs font-cocomat font-bold uppercase text-slate-500">Finalizados</span>
+          <div className="p-4 bg-brand-dorado/10 rounded-lg border border-brand-dorado/50">
+            <CheckCircle2 className="w-6 h-6 text-brand-bordo mx-auto mb-1" />
+            <span className="block text-xl font-numbers text-brand-bordo">{completedCount}</span>
+            <span className="text-xs font-cocomat font-bold uppercase text-brand-bordo/70">Finalizados</span>
           </div>
         </div>
       </div>

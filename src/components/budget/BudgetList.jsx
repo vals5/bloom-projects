@@ -6,16 +6,16 @@ export const BudgetsList = ({ onEditBudget }) => {
   const { budgets, projects, deleteBudget } = useProjects();
 
   const statusBadges = {
-    draft: { label: "Borrador", color: "bg-slate-200 text-slate-800" },
-    sent: { label: "Enviado", color: "bg-blue-200 text-blue-900" },
-    approved: { label: "Aprobado", color: "bg-emerald-200 text-emerald-900" },
-    rejected: { label: "Rechazado", color: "bg-rose-200 text-rose-900" },
+    draft: { label: "Borrador", color: "bg-brand-blanco/70 text-brand-bordo" },
+    sent: { label: "Enviado", color: "bg-brand-bordo/15 text-brand-bordo" },
+    approved: { label: "Aprobado", color: "bg-brand-bordo text-brand-blanco" },
+    rejected: { label: "Rechazado", color: "border border-brand-bordo/50 text-brand-bordo/70 line-through" },
   };
 
   const designBadges = {
-    pending: { label: "Diseño Pendiente", color: "bg-amber-200 text-amber-900" },
-    in_progress: { label: "En Diseño", color: "bg-sky-200 text-sky-900" },
-    completed: { label: "Diseño Listo", color: "bg-emerald-200 text-emerald-900" },
+    pending: { label: "Diseño Pendiente", color: "bg-brand-blanco/70 text-brand-bordo" },
+    in_progress: { label: "En Diseño", color: "bg-brand-bordo/15 text-brand-bordo" },
+    completed: { label: "Diseño Listo", color: "bg-brand-bordo text-brand-blanco" },
   };
 
   return (
@@ -97,7 +97,7 @@ export const BudgetsList = ({ onEditBudget }) => {
                   {b.notes && (
                     <div className="bg-brand-blanco/20 p-2.5 rounded-lg text-xs mb-3">
                       <p className="font-bold font-cocomat uppercase opacity-70 mb-0.5">Entregables / Notas:</p>
-                      <p className="line-clamp-3 text-slate-800">{b.notes}</p>
+                      <p className="line-clamp-3 text-brand-bordo">{b.notes}</p>
                     </div>
                   )}
                 </div>
@@ -130,7 +130,7 @@ export const BudgetsList = ({ onEditBudget }) => {
                           deleteBudget(b.id);
                         }
                       }}
-                      className="p-2 bg-brand-blanco/50 hover:bg-red-500 hover:text-white text-brand-bordo rounded-xl transition-colors"
+                      className="p-2 bg-brand-blanco/50 hover:bg-brand-bordo hover:text-brand-blanco text-brand-bordo rounded-xl transition-colors"
                       title="Eliminar presupuesto"
                     >
                       <Trash2 className="w-4 h-4" />

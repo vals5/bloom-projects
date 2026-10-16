@@ -1,5 +1,5 @@
 import React from "react";
-import { LayoutDashboard, FolderKanban, Plus, ListTodo, Receipt } from "lucide-react";
+import { LayoutDashboard, FolderKanban, Plus, ListTodo, Receipt, CalendarDays } from "lucide-react";
 
 export const Navbar = ({ activeTab, setActiveTab, onOpenNewProjectModal, onOpenNewBudgetModal }) => {
   return (
@@ -14,6 +14,18 @@ export const Navbar = ({ activeTab, setActiveTab, onOpenNewProjectModal, onOpenN
           </div>
 
           <nav className="flex space-x-2 font-cocomat">
+            <button
+              onClick={() => setActiveTab("calendar")}
+              className={`flex items-center px-4 py-2 text-sm font-bold uppercase tracking-wide rounded-md transition-all ${
+                activeTab === "calendar"
+                  ? "bg-brand-bordo/10 text-brand-bordo border-b-2 border-brand-bordo"
+                  : "text-brand-bordo/60 hover:bg-brand-bordo/5 hover:text-brand-bordo"
+              }`}
+            >
+              <CalendarDays className="w-4 h-4 mr-2" />
+              Calendario
+            </button>
+
             <button
               onClick={() => setActiveTab("projects")}
               className={`flex items-center px-4 py-2 text-sm font-bold uppercase tracking-wide rounded-md transition-all ${

@@ -93,21 +93,21 @@ export const ProjectModal = ({ isOpen, onClose, initialData = null }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 text-slate-800 max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center pb-4 border-b border-slate-100">
+    <div className="fixed inset-0 bg-[#2a0b16]/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-brand-blanco rounded-xl shadow-xl max-w-lg w-full p-6 text-brand-bordo max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center pb-4 border-b border-brand-dorado/40">
           <h2 className="text-2xl font-lucidity text-brand-bordo uppercase tracking-wide">
             {initialData ? "Editar Proyecto" : "Nuevo Proyecto"}
           </h2>
-          <button onClick={onClose} className="p-1 text-slate-400 hover:text-slate-600 rounded-lg">
+          <button onClick={onClose} className="p-1 text-brand-bordo/50 hover:text-brand-bordo/80 rounded-lg">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 mt-4 font-sans">
+        <form onSubmit={handleSubmit} className="space-y-4 mt-4 ">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 font-cocomat uppercase">Cliente</label>
+              <label className="block text-xs font-bold text-brand-bordo/70 mb-1 font-cocomat uppercase">Cliente</label>
               <input
                 type="text"
                 name="client"
@@ -115,11 +115,13 @@ export const ProjectModal = ({ isOpen, onClose, initialData = null }) => {
                 placeholder="Ej: Vivero..."
                 value={formData.client}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none text-slate-800"
+                className="w-full px-3 py-2 border border-brand-dorado rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none text-brand-bordo"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 font-cocomat uppercase">Proyecto</label>
+              <label className="block text-xs font-bold text-brand-bordo/70 mb-1 font-cocomat uppercase">
+                Proyecto
+              </label>
               <input
                 type="text"
                 name="name"
@@ -127,20 +129,20 @@ export const ProjectModal = ({ isOpen, onClose, initialData = null }) => {
                 placeholder="Ej: Rediseño..."
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none text-slate-800"
+                className="w-full px-3 py-2 border border-brand-dorado rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none text-brand-bordo"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-500 mb-1 font-cocomat uppercase">
+            <label className="block text-xs font-bold text-brand-bordo/70 mb-1 font-cocomat uppercase">
               Tipo de servicio
             </label>
             <select
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none bg-white text-slate-800"
+              className="w-full px-3 py-2 border border-brand-dorado rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none bg-brand-blanco text-brand-bordo"
             >
               <option value="Redes sociales">Redes sociales</option>
               <option value="Página web">Página web</option>
@@ -153,7 +155,7 @@ export const ProjectModal = ({ isOpen, onClose, initialData = null }) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 font-cocomat uppercase">ARS Billed</label>
+              <label className="block text-xs font-bold text-brand-bordo/70 mb-1 font-cocomat uppercase">ARS</label>
               <input
                 type="number"
                 name="arsBilled"
@@ -161,11 +163,11 @@ export const ProjectModal = ({ isOpen, onClose, initialData = null }) => {
                 placeholder="0"
                 value={formData.arsBilled}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none font-numbers text-slate-800"
+                className="w-full px-3 py-2 border border-brand-dorado rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none font-numbers text-brand-bordo"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 font-cocomat uppercase">USD Billed</label>
+              <label className="block text-xs font-bold text-brand-bordo/70 mb-1 font-cocomat uppercase">USD</label>
               <input
                 type="number"
                 name="usdBilled"
@@ -173,21 +175,21 @@ export const ProjectModal = ({ isOpen, onClose, initialData = null }) => {
                 placeholder="0"
                 value={formData.usdBilled}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none font-numbers text-slate-800"
+                className="w-full px-3 py-2 border border-brand-dorado rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none font-numbers text-brand-bordo"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 font-cocomat uppercase">
+              <label className="block text-xs font-bold text-brand-bordo/70 mb-1 font-cocomat uppercase">
                 Estado Trabajo
               </label>
               <select
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none bg-white text-slate-800"
+                className="w-full px-3 py-2 border border-brand-dorado rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none bg-brand-blanco text-brand-bordo"
               >
                 <option value="in_progress">En proceso</option>
                 <option value="paused">Pausado</option>
@@ -195,12 +197,14 @@ export const ProjectModal = ({ isOpen, onClose, initialData = null }) => {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 font-cocomat uppercase">Estado Cobro</label>
+              <label className="block text-xs font-bold text-brand-bordo/70 mb-1 font-cocomat uppercase">
+                Estado Cobro
+              </label>
               <select
                 name="paymentStatus"
                 value={formData.paymentStatus}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none bg-white text-slate-800"
+                className="w-full px-3 py-2 border border-brand-dorado rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none bg-brand-blanco text-brand-bordo"
               >
                 <option value="unpaid">Pendiente</option>
                 <option value="partial">Cobro parcial</option>
@@ -219,7 +223,7 @@ export const ProjectModal = ({ isOpen, onClose, initialData = null }) => {
                   name="partialCurrency"
                   value={formData.partialCurrency}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none bg-white text-slate-800"
+                  className="w-full px-3 py-2 border border-brand-dorado rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none bg-brand-blanco text-brand-bordo"
                 >
                   <option value="ARS">ARS</option>
                   <option value="USD">USD</option>
@@ -236,7 +240,7 @@ export const ProjectModal = ({ isOpen, onClose, initialData = null }) => {
                   placeholder="Ej: 50000"
                   value={formData.partialAmount}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none font-numbers text-slate-800"
+                  className="w-full px-3 py-2 border border-brand-dorado rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none font-numbers text-brand-bordo"
                 />
               </div>
             </div>
@@ -244,23 +248,23 @@ export const ProjectModal = ({ isOpen, onClose, initialData = null }) => {
 
           <div className="grid grid-cols-1 gap-4 pt-2">
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 font-cocomat uppercase">Inicio</label>
+              <label className="block text-xs font-bold text-brand-bordo/70 mb-1 font-cocomat uppercase">Inicio</label>
               <input
                 type="text"
                 name="startDate"
                 placeholder="DD/MM/AAAA"
                 value={formData.startDate}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none font-numbers text-slate-800"
+                className="w-full px-3 py-2 border border-brand-dorado rounded-lg text-sm focus:ring-2 focus:ring-brand-bordo outline-none font-numbers text-brand-bordo"
               />
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-brand-dorado/40">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-slate-300 text-slate-700 text-sm font-bold rounded-lg hover:bg-slate-50 font-cocomat uppercase"
+              className="px-4 py-2 border border-brand-dorado text-brand-bordo text-sm font-bold rounded-lg hover:bg-brand-dorado/20 font-cocomat uppercase"
             >
               Cancelar
             </button>

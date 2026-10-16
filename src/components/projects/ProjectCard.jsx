@@ -31,7 +31,7 @@ export const ProjectCard = ({ project, onOpenTickets, onEdit }) => {
     paused: { label: "Pausado", color: "bg-brand-bordo/20 text-brand-bordo", icon: Pause },
     completed: {
       label: "Finalizado",
-      color: "bg-brand-blanco text-brand-bordo border border-slate-200",
+      color: "bg-brand-blanco text-brand-bordo border border-brand-dorado/50",
       icon: CheckCircle,
     },
   };
@@ -79,8 +79,8 @@ export const ProjectCard = ({ project, onOpenTickets, onEdit }) => {
   return (
     <div
       ref={cardRef}
-      // Fondo de la tarjeta en gris
-      className="bg-slate-100 text-brand-bordo rounded-2xl p-6 shadow-md hover:shadow-lg transition-all duration-300 flex flex-col justify-between border border-slate-200 relative"
+      // Tarjeta dorada (igual que presupuestos) con paneles claros adentro
+      className="bg-brand-dorado text-brand-bordo rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col justify-between border border-brand-blanco/30 relative"
     >
       <div>
         {/* Header - Layout Vertical */}
@@ -107,7 +107,7 @@ export const ProjectCard = ({ project, onOpenTickets, onEdit }) => {
               </button>
 
               {activeDropdown === "work" && (
-                <div className="absolute top-full left-0 mt-2 w-36 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden font-cocomat text-xs font-bold uppercase tracking-wider text-slate-700 z-50">
+                <div className="absolute top-full left-0 mt-2 w-36 bg-brand-blanco rounded-xl shadow-xl border border-brand-dorado/40 overflow-hidden font-cocomat text-xs font-bold uppercase tracking-wider text-brand-bordo z-50">
                   <button
                     onClick={() => handleWorkStatusChange("in_progress")}
                     className="w-full text-left px-4 py-3 hover:bg-brand-bordo/10 hover:text-brand-bordo transition-colors"
@@ -122,7 +122,7 @@ export const ProjectCard = ({ project, onOpenTickets, onEdit }) => {
                   </button>
                   <button
                     onClick={() => handleWorkStatusChange("completed")}
-                    className="w-full text-left px-4 py-3 hover:bg-brand-bordo/10 hover:text-brand-bordo transition-colors border-t border-slate-100"
+                    className="w-full text-left px-4 py-3 hover:bg-brand-bordo/10 hover:text-brand-bordo transition-colors border-t border-brand-dorado/40"
                   >
                     Finalizado
                   </button>
@@ -150,7 +150,7 @@ export const ProjectCard = ({ project, onOpenTickets, onEdit }) => {
               </button>
 
               {activeDropdown === "payment" && (
-                <div className="absolute top-full left-0 mt-2 w-52 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden font-sans text-sm text-slate-700 z-50">
+                <div className="absolute top-full left-0 mt-2 w-52 bg-brand-blanco rounded-xl shadow-xl border border-brand-dorado/40 overflow-hidden text-sm text-brand-bordo z-50">
                   {!showPartialInput ? (
                     <div className="font-cocomat text-xs font-bold uppercase tracking-wider">
                       <button
@@ -167,21 +167,21 @@ export const ProjectCard = ({ project, onOpenTickets, onEdit }) => {
                       </button>
                       <button
                         onClick={() => handlePaymentStatusChange("paid")}
-                        className="w-full text-left px-4 py-3 hover:bg-brand-bordo/10 hover:text-brand-bordo transition-colors border-t border-slate-100"
+                        className="w-full text-left px-4 py-3 hover:bg-brand-bordo/10 hover:text-brand-bordo transition-colors border-t border-brand-dorado/40"
                       >
                         Cobrado Total
                       </button>
                     </div>
                   ) : (
                     <div className="p-3">
-                      <p className="text-xs font-cocomat font-bold uppercase text-slate-500 mb-2">
+                      <p className="text-xs font-cocomat font-bold uppercase text-brand-bordo/70 mb-2">
                         Ingresar monto parcial
                       </p>
                       <div className="flex gap-2 mb-3">
                         <select
                           value={partialCurrency}
                           onChange={(e) => setPartialCurrency(e.target.value)}
-                          className="w-20 px-2 py-1.5 bg-slate-50 border border-slate-200 rounded outline-none text-xs font-bold"
+                          className="w-20 px-2 py-1.5 bg-brand-dorado/10 border border-brand-dorado/50 rounded outline-none text-xs font-bold"
                         >
                           <option value="ARS">ARS</option>
                           <option value="USD">USD</option>
@@ -192,19 +192,19 @@ export const ProjectCard = ({ project, onOpenTickets, onEdit }) => {
                           value={partialAmount}
                           onChange={(e) => setPartialAmount(e.target.value)}
                           placeholder="Monto..."
-                          className="flex-1 px-2 py-1.5 border border-slate-200 rounded outline-none text-xs font-numbers min-w-0"
+                          className="flex-1 px-2 py-1.5 border border-brand-dorado/50 rounded outline-none text-xs font-numbers min-w-0"
                         />
                       </div>
                       <div className="flex gap-2">
                         <button
                           onClick={() => setShowPartialInput(false)}
-                          className="flex-1 px-2 py-1.5 text-xs font-bold text-slate-500 bg-slate-100 hover:bg-slate-200 rounded transition-colors font-cocomat uppercase"
+                          className="flex-1 px-2 py-1.5 text-xs font-bold text-brand-bordo/70 bg-brand-dorado/20 hover:bg-brand-dorado/40 rounded transition-colors font-cocomat uppercase"
                         >
                           Volver
                         </button>
                         <button
                           onClick={savePartialPayment}
-                          className="flex-1 px-2 py-1.5 text-xs font-bold text-white bg-brand-bordo hover:bg-brand-bordo/90 rounded transition-colors font-cocomat uppercase"
+                          className="flex-1 px-2 py-1.5 text-xs font-bold text-brand-blanco bg-brand-bordo hover:bg-brand-bordo/90 rounded transition-colors font-cocomat uppercase"
                         >
                           Guardar
                         </button>
@@ -217,11 +217,11 @@ export const ProjectCard = ({ project, onOpenTickets, onEdit }) => {
           </div>
         </div>
 
-        {/* Sección de Dinero - Fondo blanco para resaltar */}
+        {/* Sección de Dinero - paneles claros */}
         {showMoney && (
           <div className={`grid ${moneyCols} gap-3 mb-4`}>
             {hasARS && (
-              <div className="bg-white p-3 rounded-xl relative border border-slate-200/80 shadow-xs">
+              <div className="bg-brand-blanco p-3 rounded-xl relative border border-brand-bordo/10 shadow-xs">
                 <p className="opacity-70 text-xs uppercase mb-1 font-bold font-cocomat text-brand-bordo">ARS</p>
                 <p className="text-xl font-numbers text-brand-bordo font-bold">
                   {formatCurrency(project.arsBilled, "ARS")}
@@ -229,7 +229,7 @@ export const ProjectCard = ({ project, onOpenTickets, onEdit }) => {
               </div>
             )}
             {hasUSD && (
-              <div className="bg-white p-3 rounded-xl relative border border-slate-200/80 shadow-xs">
+              <div className="bg-brand-blanco p-3 rounded-xl relative border border-brand-bordo/10 shadow-xs">
                 <p className="opacity-70 text-xs uppercase mb-1 font-bold font-cocomat text-brand-bordo">USD</p>
                 <p className="text-xl font-numbers text-brand-bordo font-bold">
                   {formatCurrency(project.usdBilled, "USD")}
@@ -239,9 +239,9 @@ export const ProjectCard = ({ project, onOpenTickets, onEdit }) => {
           </div>
         )}
 
-        {/* Tiempo Invertido y Fechas - Fondo blanco para resaltar */}
+        {/* Tiempo Invertido y Fechas - paneles claros */}
         <div
-          className={`bg-white border border-slate-200/80 p-3 rounded-xl mb-6 shadow-xs ${!showMoney ? "mt-2" : ""}`}
+          className={`bg-brand-blanco border border-brand-bordo/10 p-3 rounded-xl mb-6 shadow-xs ${!showMoney ? "mt-2" : ""}`}
         >
           <div className="flex items-center justify-between mb-2">
             <span className="flex items-center gap-1 opacity-80 text-xs uppercase font-bold font-cocomat text-brand-bordo">
@@ -275,7 +275,7 @@ export const ProjectCard = ({ project, onOpenTickets, onEdit }) => {
         <div className="flex items-center gap-1">
           <button
             onClick={() => onEdit(project)}
-            className="p-2 bg-white hover:bg-slate-200 text-brand-bordo rounded-xl border border-slate-200 transition-colors"
+            className="p-2 bg-brand-blanco hover:bg-brand-blanco/70 text-brand-bordo rounded-xl border border-brand-dorado/50 transition-colors"
             title="Editar proyecto"
           >
             <Edit3 className="w-5 h-5" />
@@ -290,7 +290,7 @@ export const ProjectCard = ({ project, onOpenTickets, onEdit }) => {
                 deleteProject(project.id);
               }
             }}
-            className="p-2 bg-white hover:bg-red-500 hover:text-white text-brand-bordo rounded-xl border border-slate-200 transition-colors"
+            className="p-2 bg-brand-blanco hover:bg-brand-bordo hover:text-brand-blanco text-brand-bordo rounded-xl border border-brand-dorado/50 transition-colors"
             title="Eliminar proyecto"
           >
             <Trash2 className="w-5 h-5" />
